@@ -19,6 +19,8 @@ interface ExercisesTableProps {
   setPage: (page: number) => void;
   totalPages: number;
   totalExercises: number;
+  pageSize: number;
+  setPageSize: (size: number) => void;
 }
 
 export const ExercisesTable = (
@@ -32,6 +34,8 @@ export const ExercisesTable = (
     setPage,
     totalPages,
     totalExercises,
+    pageSize,
+    setPageSize,
   }: ExercisesTableProps
 ) => {
   const getMuscleLabel = mapLabel(MUSCLES);
@@ -152,6 +156,8 @@ export const ExercisesTable = (
           setPage={setPage}
           totalPages={totalPages}
           totalExercises={totalExercises}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
         />
       )}
     </div>

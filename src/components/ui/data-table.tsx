@@ -1,5 +1,3 @@
-"use client"
-
 import {
   flexRender,
   getCoreRowModel,
@@ -15,8 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {Button} from "@/components/ui/button.tsx";
-import {IoCaretBack, IoCaretForward} from "react-icons/io5";
+import { Button } from "@/components/ui/button.tsx"
+import { IoCaretBack, IoCaretForward } from "react-icons/io5"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -25,17 +23,23 @@ interface DataTableProps<TData, TValue> {
   setPage: (page: number) => void;
   totalPages: number;
   totalExercises: number;
+  pageSize: number;
+  setPageSize: (size: number) => void;
+  pageSizeOptions?: number[];
 }
 
-export function DataTable<TData, TValue>(
-  {
-    columns,
-    data,
-    page,
-    setPage,
-    totalPages,
-    totalExercises,
-  }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  page,
+  setPage,
+  totalPages,
+  totalExercises,
+  pageSize,
+  setPageSize,
+  pageSizeOptions = [10, 25, 50, 100],
+}: DataTableProps<TData, TValue>) {
+
   const table = useReactTable({
     data,
     columns,
@@ -44,24 +48,27 @@ export function DataTable<TData, TValue>(
     pageCount: totalPages,
   });
 
+  const handlePageSizeChange = (value: number) => {
+    setPageSize(value);
+    setPage(1);
+  };
+
   return (
     <div className="flex flex-col h-full justify-between">
       <Table>
         <TableHeader className="bg-[#F5F5F5]">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </TableHead>
-                )
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
@@ -88,16 +95,44 @@ export function DataTable<TData, TValue>(
           )}
         </TableBody>
       </Table>
-      <div className="flex w-full justify-between items-center">
-        <p className="text-xs text-gray-500">Resultado: {totalExercises} ejercicios encontrados</p>
-        <div className="flex items-center justify-end space-x-4 py-4">
-          <Button size="icon" onClick={() => setPage(page - 1)} disabled={page <= 1}>
+
+      <div className="flex w-full justify-between items-center py-4 gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">
+            Mostrar
+          </span>
+          <select
+            className="h-8 rounded-md border border-gray-300 bg-white px-2 text-sm"
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+          >
+            {pageSizeOptions.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-gray-500">
+            por página — {totalExercises} ejercicios encontrados
+          </span>
+        </div>
+
+        <div className="flex items-center justify-end space-x-4">
+          <Button
+            size="icon"
+            onClick={() => setPage(page - 1)}
+            disabled={page <= 1}
+          >
             <IoCaretBack />
           </Button>
           <span className="text-sm text-muted-foreground">
-          Página <strong>{page} de {totalPages}</strong>
-        </span>
-          <Button size="icon" onClick={() => setPage(page + 1)} disabled={page >= totalPages}>
+            Página <strong>{page} de {totalPages}</strong>
+          </span>
+          <Button
+            size="icon"
+            onClick={() => setPage(page + 1)}
+            disabled={page >= totalPages}
+          >
             <IoCaretForward />
           </Button>
         </div>

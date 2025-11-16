@@ -19,6 +19,17 @@ import {
   resetFormValues
 } from "@/exercises/utils/exerciseFormUtils.ts";
 import {ExerciseForm} from "@/exercises/components/ExerciseForm.tsx";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export const CreateEditExerciseDrawer = (
   {
@@ -160,12 +171,41 @@ export const CreateEditExerciseDrawer = (
               : selectedExercise ? "Guardar cambios" : "Crear ejercicio"}
           </Button>
           {selectedExercise && (
-            <Button
-              variant="destructive"
-              onClick={()=>deleteMutation.mutate(selectedExercise.id)}
-            >
-              Eliminar ejercicio
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  disabled={deleteMutation.isPending}
+                >
+                  {deleteMutation.isPending ? "Eliminando..." : "Eliminar ejercicio"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    ¿Seguro que quieres eliminar este ejercicio?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción no se puede deshacer. El ejercicio será eliminado de forma permanente.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>
+                    Cancelar
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-600 hover:bg-red-700"
+                    onClick={() => {
+                      if (selectedExercise?.id) {
+                        deleteMutation.mutate(selectedExercise.id)
+                      }
+                    }}
+                  >
+                    Sí, eliminar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </DrawerFooter>
       </DrawerContent>

@@ -26,7 +26,8 @@ export const ExercisesPage = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const [pageSize, setPageSize] = useState(10);
+  const limit = pageSize;
 
   const muscleGroup = useSelector((state: RootState) => state.filters.muscleGroup);
   const difficulty = useSelector((state: RootState) => state.filters.difficulty);
@@ -52,7 +53,7 @@ export const ExercisesPage = () => {
     isLoading,
     isError,
   } = useQuery<SearchExercisesResponse>({
-    queryKey: ['exercises', debouncedSearch, muscleGroup, difficulty, equipment, page],
+    queryKey: ['exercises', debouncedSearch, muscleGroup, difficulty, equipment, page, pageSize],
     queryFn: () => {
       if (muscleGroup || difficulty || equipment) {
         return filterExercisesByProps(muscleGroup, difficulty, equipment, limit, page);
@@ -113,6 +114,8 @@ export const ExercisesPage = () => {
           setPage={setPage}
           totalPages={totalPages}
           totalExercises={data?.total || 0}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
         />
       </div>
       <ExercisesTableFiltersDrawer
